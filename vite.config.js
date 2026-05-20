@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import tailwindcss from '@tailwindcss/vite';
+import tailwindcss from '@tailwindcss/vite'; // Atau plugin tailwind yang kamu pakai
 
 export default defineConfig({
     plugins: [
@@ -11,8 +11,12 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
-        watch: {
-            ignored: ['**/storage/framework/views/**'],
+        host: '0.0.0.0', // Agar bisa diakses dari jaringan luar
+        port: 5173,      // Port default Vite
+        strictPort: true,
+        hmr: {
+            protocol: 'wss', // Penting: Gunakan Secure WebSocket untuk ngrok
+            host: 'https://startup-magnetize-symphonic.ngrok-free.dev', // GANTI dengan link ngrok punyamu
         },
     },
 });

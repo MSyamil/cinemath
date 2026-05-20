@@ -38,11 +38,17 @@
                     @enderror
                 </div>
 
-                <div class="pt-2">
+                <div class="pt-2 flex flex-col gap-3">
                     <button type="submit" 
                             class="w-full bg-gradient-to-r from-[#E50914] to-red-700 hover:from-red-600 hover:to-red-800 text-white font-medium py-3 px-4 rounded-xl shadow-[0_0_15px_rgba(229,9,20,0.3)] transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
                         Sign In
                     </button>
+
+                    <button type="button" id="biometric-login" class="w-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/><path d="M12 12m-5 0a5 5 0 1 0 10 0a5 5 0 1 0 -10 0"/><path d="M12 12l3 -3"/></svg>
+                        Sign in with Biometrics
+                    </button>
+                    <p id="biometric-error" class="text-sm text-red-500 hidden text-center"></p>
                 </div>
             </form>
 
@@ -55,4 +61,36 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const biometricBtn = document.getElementById('biometric-login');
+        const biometricError = document.getElementById('biometric-error');
+
+        // Check if Passkeys are supported
+        if (window.Passkeys && window.Passkeys.isSupported()) {
+            biometricBtn.style.display = 'flex';
+            
+            biometricBtn.addEventListener('click', async () => {
+                biometricError.classList.add('hidden');
+                const previousText = biometricBtn.innerHTML;
+                biometricBtn.innerHTML = 'Verifying...';
+                
+                try {
+                    const response = await window.Passkeys.verify();
+                    // If it reaches here, verification was successful
+                    window.location.href = response.redirect || '/';
+                } catch (error) {
+                    console.error(error);
+                    biometricError.textContent = error.message || 'Login failed or was cancelled.';
+                    biometricError.classList.remove('hidden');
+                } finally {
+                    biometricBtn.innerHTML = previousText;
+                }
+            });
+        }
+    });
+</script>
 @endsection

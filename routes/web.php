@@ -18,4 +18,5 @@ Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->
 
 Route::middleware('auth')->group(function () {
     Route::post('/movies/{movie_id}/toggle-watched', [MovieController::class, 'toggleWatched'])->name('movies.toggle-watched');
+    Route::view('/account/biometric', 'auth.biometric-settings')->name('biometric.settings');
 });
